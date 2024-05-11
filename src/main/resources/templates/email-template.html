@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>OTP CODE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        .main{
+            padding: 10px;
+            font-family: "Poppins", sans-serif;
+        }
+        .main img {
+            width: 90px ;
+            margin: 0 auto;
+        }
+        .title{
+            text-align: center;
+            font-size: 18px;
+            width: 100%;
+        }
+        .image-div{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        .main .intro{
+            font-size: 14px;
+            width: 100%;
+            text-align: center;
+        }
+        .main .intro span{
+            text-align: center;
+        }
+        .otp-code{
+            margin: 20px 0 ;
+            letter-spacing: 1px;
+            font-family: "Poppins", sans-serif;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            height: 63px;
+        }
+        .otp-code span {
+            margin: 0 auto ;
+            font-size: 17px ;
+            color: white;
+            font-weight: bold;
+            padding: 17px 70px;
+            background-color: rgba(153, 149, 149, 0.733);
+            display: flex;
+            align-items: center;
+        }
+        .descrip{
+            font-size: 14px;
+            text-align: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="main">
+    <div class="image-div">
+        <img src="https://miro.medium.com/v2/resize:fit:625/1*AbiX4LwtSNozoyfypcKvEg.png" alt="">
+    </div>
+    <h2 class="title">Expense Tracking Application</h2>
+    <p class="intro">
+        <span>Before you sign in, we need to verify your identify. Enter the following code on the sign-in page.</span>
+    </p>
+    <div class="otp-code">
+        <span  th:text="${message}">No message</span>
+    </div>
+    <p class="descrip">Welcome to the Expense Tracking Application. Here, you can monitor your expenses and manage your budget effectively.</p>
+</div>
+</body>
+</html>
+
