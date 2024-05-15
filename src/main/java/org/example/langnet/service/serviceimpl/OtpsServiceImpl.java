@@ -58,18 +58,8 @@ public class OtpsServiceImpl implements OtpsService {
     }
 
     @Override
-    public void setOtpActiveToFalseByUserId(UUID userId) {
-        otpsRepository.setOtpActiveToFalseByUserId(userId);
-    }
-
-    @Override
-    public Otps getLatestActiveOtpByUserId(UUID userId) {
-        return otpsRepository.getLatestActiveOtpByUserId(userId);
-    }
-
-    @Override
     public boolean verifyOtp(Long otpCode, UUID userId) throws Exception {
-        Otps otp = otpsRepository.getLatestActiveOtpByUserId(userId);
+        Otps otp = otpsRepository.getOtpsByOtpCode(otpCode);
         if (otp == null) {
             throw new Exception("No active OTP found for this user.");
         }
@@ -77,12 +67,15 @@ public class OtpsServiceImpl implements OtpsService {
         if (!Objects.equals(otp.getOtpsCode(), otpCode) || Timestamp.valueOf(otp.getExpirationDate()).before(new Timestamp(System.currentTimeMillis()))) {
             return false;
         }
-
-        otpsRepository.markOtpAsVerifiedAndInactive(otp.getOtpsId());
         return true;
     }
     @Override
     public void confirmVerifyByUserId(UUID userId) {
         otpsRepository.confirmVerifyByUserId(userId);
+    }
+
+    @Override
+    public void updateOTPToResetPassword(OtpsRequestDTO otpsRequestDTO) {
+        otpsRepository.updateOTPToResetPassword(otpsRequestDTO);
     }
 }

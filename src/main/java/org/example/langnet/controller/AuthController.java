@@ -41,7 +41,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLoginRequest userLoginRequest) throws Exception {
         authenticate(userLoginRequest.getEmail(), userLoginRequest.getPassword());
-        final UserDetails userDetails = appUserService.loadUserByUsername(userLoginRequest.getEmail());
+        UserDetails userDetails = appUserService.loadUserByUsername(userLoginRequest.getEmail());
         AppUser user = ((CustomAppUserDetail) userDetails).getUser();
         Otps otps = otpsService.getOtpsByUserId(user.getUserId());
         if (otps == null || !otps.getVerify()) {
@@ -51,7 +51,6 @@ public class AuthController {
         UserLoginTokenResponse authResponse = new UserLoginTokenResponse(token);
         return ResponseEntity.ok(authResponse);
     }
-
     private void authenticate(String email, String password) throws Exception {
         try {
             UserDetails user = appUserService.loadUserByUsername(email);

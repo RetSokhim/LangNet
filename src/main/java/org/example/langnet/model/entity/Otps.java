@@ -13,7 +13,6 @@ public class Otps {
     private UUID otpsId;
     private Long otpsCode;
     private Boolean verify;
-    private Boolean active;
     private LocalDateTime issuedAt;
     private LocalDateTime expirationDate;
     private AppUser user;

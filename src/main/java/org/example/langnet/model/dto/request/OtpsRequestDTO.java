@@ -15,6 +15,5 @@ public class OtpsRequestDTO {
     private LocalDateTime issuedAt;
     private LocalDateTime expirationDate;
     private Boolean verify;
-    private Boolean active;
     private UUID user;
 }

@@ -1,7 +1,9 @@
 package org.example.langnet.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import org.example.langnet.model.dto.respond.ApiRespond;
 import org.example.langnet.model.dto.respond.FileResponse;
+import org.example.langnet.model.dto.respond.JsonbData;
 import org.example.langnet.service.ExcelFileService;
 import org.example.langnet.service.FileService;
 import org.springframework.core.io.Resource;
@@ -13,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/files")
@@ -53,6 +58,37 @@ public class FileUploadController {
     public ResponseEntity<?> uploadExcelFile(@RequestParam MultipartFile file) throws IOException {
         excelFileService.importFromExcel(file);
         return new ResponseEntity<>("Excel file processed successfully", HttpStatus.CREATED);
+    }
+    
+    @PostMapping(path = "/upload multi excel", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadFiles(@RequestParam List<MultipartFile> files) {
+        try {
+            excelFileService.importFromExcelAsList(files);
+            return ResponseEntity.ok("Files processed successfully.");
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("Failed to process files: " + e.getMessage());
+        }
+    }
+
+    @PostMapping(path = "/upload multi excel and convert to JSON", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadFileConvertToJSON(@RequestParam("files") List<MultipartFile> files) {
+        try {
+            excelFileService.importFromExcelToJSONB(files);
+            return ResponseEntity.ok("Files processed successfully.");
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("Failed to process files: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("get all jsonb data")
+    public ResponseEntity<?> getAllJsonbData(){
+        return new ResponseEntity<>(new ApiRespond<>("Get all successful",HttpStatus.OK,excelFileService.getAllJsonData(),200, LocalDateTime.now()),HttpStatus.OK);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateExcelFile(@RequestParam String key, @RequestParam String newValue) {
+            excelFileService.updateValueOfWord(key, newValue);
+            return ResponseEntity.ok(excelFileService.getAllJsonData());
     }
 }
 

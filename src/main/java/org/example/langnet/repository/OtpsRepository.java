@@ -30,7 +30,7 @@ public interface OtpsRepository {
     Otps getOtpsByUserId(UUID userId);
 
     @Select("""
-            SELECT * FROM otps_tb WHERE otps_code = #{otp} AND active = true
+            SELECT * FROM otps_tb WHERE otps_code = #{otp}
             """)
     @ResultMap("otpMapping")
     Otps getOtpsByOtpCode(Long otp);
@@ -49,31 +49,17 @@ public interface OtpsRepository {
             """)
     void updateTheCodeAfterResend(@Param("otps") OtpsRequestDTO otps, UUID userId);
 
-
     @Update("""
             UPDATE otps_tb
-            SET active = false
-            WHERE user_id = #{userId}::UUID AND active = true
-            """)
-    void setOtpActiveToFalseByUserId(UUID userId);
-
-    @Select("""
-            SELECT * FROM otps_tb
+            SET verify = true
             WHERE user_id = #{userId}::UUID
-            AND active = true ORDER BY issued_at DESC LIMIT 1
             """)
-    @ResultMap("otpMapping")
-    Otps getLatestActiveOtpByUserId(UUID userId);
-
-    @Update("""
-            UPDATE otps_tb SET active = false WHERE otps_id = #{otpsId}
-            """)
-    void markOtpAsVerifiedAndInactive(UUID otpsId);
+    void confirmVerifyByUserId(UUID userId);
 
     @Update("""
     UPDATE otps_tb
-    SET verify = true
-    WHERE user_id = #{userId}::UUID
+    SET otps_code = #{otp.otpsCode}, issued_at = #{otp.issuedAt}, expiration_date = #{otp.expirationDate} , verify = true
+    WHERE user_id = #{otp.user}
     """)
-    void confirmVerifyByUserId(UUID userId);
+    void updateOTPToResetPassword(@Param("otp") OtpsRequestDTO otpsRequestDTO);
 }

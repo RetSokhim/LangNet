@@ -12,8 +12,7 @@ public interface OtpsService {
     Otps getOtpsByOtpCode(Long otp);
     void confirmVerify(Otps otps);
     void updateTheCodeAfterResend(OtpsRequestDTO otps, UUID userId);
-    void setOtpActiveToFalseByUserId(UUID userId);
-    Otps getLatestActiveOtpByUserId(UUID userId);
     boolean verifyOtp(Long otp, UUID userId) throws Exception;
     void confirmVerifyByUserId(UUID userId);
+    void updateOTPToResetPassword(OtpsRequestDTO otpsRequestDTO);
 }

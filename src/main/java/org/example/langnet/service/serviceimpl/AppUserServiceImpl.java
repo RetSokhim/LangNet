@@ -76,7 +76,6 @@ public class AppUserServiceImpl implements AppUserService {
             }
             if (!otps.getVerify()) {
                 otps.setVerify(true);
-                otps.setActive(false);
                 otpsService.confirmVerify(otps);
             } else {
                 throw new AccountVerificationException("Your account has already been verified");
@@ -112,12 +111,9 @@ public class AppUserServiceImpl implements AppUserService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
-        //Set Active to fault after OTP is used
-        otpsService.setOtpActiveToFalseByUserId(user.getUserId());
-
         OtpsRequestDTO otpsRequestDTO = otpsService.generateOtp();
         otpsRequestDTO.setUser(user.getUserId());
-        otpsService.insertOtpAfterSent(otpsRequestDTO);
+        otpsService.updateOTPToResetPassword(otpsRequestDTO);
         Context context = new Context();
         context.setVariable("message", String.valueOf(otpsRequestDTO.getOtpsCode()));
         emailService.sendEmailWithHtmlTemplate(email,
@@ -126,14 +122,12 @@ public class AppUserServiceImpl implements AppUserService {
     }
     @Override
     public void verifyAndResetPassword(UUID userId,Long otpCode, String newPassword) throws OTPExpiredException {
-        Otps otp = otpsService.getLatestActiveOtpByUserId(userId);
+        Otps otp = otpsService.getOtpsByOtpCode(otpCode);
         if (otp == null || !otp.getOtpsCode().equals(otpCode) || Timestamp.valueOf(otp.getExpirationDate()).before(new Timestamp(System.currentTimeMillis()))) {
             throw new OTPExpiredException("OTP is invalid or has expired.");
         }
         String encodedPassword = bCryptPasswordEncoder.encode(newPassword);
         appUserRepository.updatePassword(userId, encodedPassword);
-        //Set active to fault after OTP is used
-        otpsService.setOtpActiveToFalseByUserId(userId);
     }
     @Override
     public void updatePassword(UUID userId, String password) {
