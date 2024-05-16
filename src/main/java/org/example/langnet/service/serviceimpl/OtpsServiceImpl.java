@@ -14,9 +14,13 @@ import java.util.Random;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
 public class OtpsServiceImpl implements OtpsService {
     private final OtpsRepository otpsRepository;
+
+    public OtpsServiceImpl(OtpsRepository otpsRepository) {
+        this.otpsRepository = otpsRepository;
+    }
+
     @Override
     public OtpsRequestDTO generateOtp() {
         OtpsRequestDTO otps = new OtpsRequestDTO();

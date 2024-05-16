@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -20,7 +21,7 @@ public class AppUser {
     private String password;
     private String image;
     private String gender;
-    private String phoneNumber;
-    private String telegram;
-    private String facebook;
+    private Contact contact;
+    private List<Project> projects;
+    private List<Role> roles;
 }

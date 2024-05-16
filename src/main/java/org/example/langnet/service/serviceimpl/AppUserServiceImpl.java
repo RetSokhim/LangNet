@@ -24,12 +24,18 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
 public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
     private final OtpsService otpsService;
     private final EmailService emailService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public AppUserServiceImpl(AppUserRepository appUserRepository, OtpsService otpsService, EmailService emailService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.appUserRepository = appUserRepository;
+        this.otpsService = otpsService;
+        this.emailService = emailService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
 
     //For authenticate user from database
     @Override

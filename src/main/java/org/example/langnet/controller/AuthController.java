@@ -29,7 +29,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping("api/v1/auth")
 public class AuthController {
     private final AppUserService appUserService;
@@ -37,6 +36,14 @@ public class AuthController {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final OtpsService otpsService;
+
+    public AuthController(AppUserService appUserService, BCryptPasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, OtpsService otpsService) {
+        this.appUserService = appUserService;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+        this.otpsService = otpsService;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLoginRequest userLoginRequest) throws Exception {

@@ -1,4 +1,4 @@
-package org.example.langnet.model.dto.respond;
+package org.example.langnet.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +9,8 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class JsonbData {
-    private UUID id;
-    private String key;
-    private String value;
+public class Hint {
+    private UUID hintId;
+    private AppUser providedBy;
+    private String hint;
 }

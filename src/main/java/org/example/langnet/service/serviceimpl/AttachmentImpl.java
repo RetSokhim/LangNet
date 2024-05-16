@@ -1,12 +1,10 @@
 package org.example.langnet.service.serviceimpl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
-import org.example.langnet.model.dto.respond.JsonbData;
-import org.example.langnet.model.entity.ExcelFileValue;
-import org.example.langnet.repository.FileExcelRepository;
-import org.example.langnet.service.ExcelFileService;
+import org.example.langnet.model.dto.respond.ExcelFileValue;
+import org.example.langnet.repository.AttachmentRepository;
+import org.example.langnet.service.AttachmentService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,49 +15,55 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
-public class ExcelFileImpl implements ExcelFileService {
-    private final FileExcelRepository fileExcelRepository;
+public class AttachmentImpl implements AttachmentService {
+    private final AttachmentRepository attachmentRepository;
     private final ObjectMapper objectMapper;
-    @Override
-    public void insertExcelIntoDatabase(ExcelFileValue excelFileValue) {
-        fileExcelRepository.insertExcelIntoDatabase(excelFileValue);
-    }
-    @Override
-    public List<JsonbData> getAllJsonData() {
-        return fileExcelRepository.getAllJsonData();
+
+    public AttachmentImpl(AttachmentRepository attachmentRepository, ObjectMapper objectMapper) {
+        this.attachmentRepository = attachmentRepository;
+        this.objectMapper = objectMapper;
     }
 
-    @Override
-    public void updateValueOfWord(String key, String newValue) {
-         fileExcelRepository.updateValueOfWord(key,newValue);
-    }
+//    @Override
+//    public List<JsonbData> getAllJsonData() {
+//        return fileExcelRepository.getAllJsonData();
+//    }
 
-    @Override
-    public void importFromExcel(MultipartFile file) throws IOException {
-        List<ExcelFileValue> entities = convertExcelToEntities(file);
+//    @Override
+//    public void updateValueOfWord(String key,String value) {
+//        fileExcelRepository.updateValueOfWord(key,value);
+//    }
 
-        for (ExcelFileValue entity : entities) {
-            fileExcelRepository.insertExcelIntoDatabase(entity);
-        }
-    }
+//    @Override
+//    public void updateValueById(UUID id, String newValue) {
+//        fileExcelRepository.updateValueById(id,newValue);
+//    }
+
+//    @Override
+//    public void importFromExcel(MultipartFile file) throws IOException {
+//        List<ExcelFileValue> entities = convertExcelToEntities(file);
+//
+//        for (ExcelFileValue entity : entities) {
+//            fileExcelRepository.insertExcelIntoDatabase(entity);
+//        }
+//    }
 
     @Override
     public void importFromExcelToJSONB(List<MultipartFile> files) throws IOException {
         for (MultipartFile file : files) {
             String json = convertExcelToJson(file);
-            fileExcelRepository.insertJsonData(json);
+            attachmentRepository.insertJsonData(json);
         }
     }
-    @Override
-    public void importFromExcelAsList(List<MultipartFile> files) throws IOException {
-        for (MultipartFile file : files) {
-            List<ExcelFileValue> entities = convertExcelToEntities(file);
-            for (ExcelFileValue entity : entities) {
-                fileExcelRepository.insertExcelIntoDatabase(entity);
-            }
-        }
-    }
+//    @Override
+//    public void importFromExcelAsList(List<MultipartFile> files) throws IOException {
+//        for (MultipartFile file : files) {
+//            List<ExcelFileValue> entities = convertExcelToEntities(file);
+//            for (ExcelFileValue entity : entities) {
+//                fileExcelRepository.insertExcelIntoDatabase(entity);
+//            }
+//        }
+//    }
 
     private List<ExcelFileValue> convertExcelToEntities(MultipartFile file) throws IOException {
         List<ExcelFileValue> entities = new ArrayList<>();
