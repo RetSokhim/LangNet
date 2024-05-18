@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -13,8 +14,8 @@ import java.util.UUID;
 public class Notification {
     private UUID notificationId;
     private AppUser sender;
-    private AppUser receiver;
-    private String type;
+    private List<AppUser> receiver;
+    private Type type;
     private String title;
     private String description;
     private Boolean isRead;

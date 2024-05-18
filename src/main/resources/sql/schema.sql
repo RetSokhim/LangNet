@@ -6,11 +6,11 @@ CREATE TABLE IF NOT EXISTS user_tb
     username   VARCHAR(100) UNIQUE NOT NULL,
     email      VARCHAR(100) UNIQUE NOT NULL,
     password   VARCHAR(150)        NOT NULL,
-    firstname  VARCHAR(50)         NOT NULL,
-    lastname   VARCHAR(50)         NOT NULL,
-    birth_date TIMESTAMP           NOT NULL,
+    firstname  VARCHAR(50)      DEFAULT NULL,
+    lastname   VARCHAR(50)      DEFAULT NULL,
+    birth_date TIMESTAMP        DEFAULT NULL,
     image      VARCHAR(255)     DEFAULT NULL,
-    gender     VARCHAR(7)          NOT NULL
+    gender     VARCHAR(7)       DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS contact_tb
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS project_tb
 (
     project_id   UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     project_name VARCHAR(100) NOT NULL,
-    status       VARCHAR(15)      DEFAULT 'Pending',
+    status       VARCHAR(15)      DEFAULT 'PENDING',
     active       BOOLEAN          DEFAULT true,
     create_date  TIMESTAMP        DEFAULT now(),
     updated_date TIMESTAMP        DEFAULT NULL,
@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS attachment_tb
     posted_by       UUID REFERENCES user_tb (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
     attachment_name VARCHAR(100) NOT NULL,
     data            JSONB        NOT NULL,
-    status          VARCHAR(15)      DEFAULT 'Pending',
+    status          VARCHAR(15)      DEFAULT 'PENDING',
     posted_date     TIMESTAMP        DEFAULT now(),
     expire_date     TIMESTAMP        DEFAULT NULL
 );

@@ -20,7 +20,7 @@ public class Attachment {
     private String attachmentName;
     private ExcelFileValue data;
     private List<Hint> hints;
-    private String status;
+    private Status status;
     private LocalDateTime postedDate;
     private LocalDateTime expireDate;
 

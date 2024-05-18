@@ -5,6 +5,7 @@ import org.example.langnet.exception.AccountVerificationException;
 import org.example.langnet.exception.OTPExpiredException;
 import org.example.langnet.exception.SearchNotFoundException;
 import org.example.langnet.model.CustomAppUserDetail;
+import org.example.langnet.model.dto.request.LoginWithThirdPartyRequest;
 import org.example.langnet.model.dto.request.UserPasswordRequest;
 import org.example.langnet.model.dto.request.UserRegisterRequest;
 import org.example.langnet.model.dto.request.OtpsRequestDTO;
@@ -43,6 +44,7 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser user = appUserRepository.findUserByEmail(username);
         return new CustomAppUserDetail(user);
     }
+
     @Override
     public AppUser findUserByEmail(String username) {
         return appUserRepository.findUserByEmail(username);
@@ -61,7 +63,7 @@ public class AppUserServiceImpl implements AppUserService {
         userRegisterRequest.setPassword(password);
 
         AppUser user = new AppUser();
-        user.setUsername(userRegisterRequest.getFirstName()+" "+userRegisterRequest.getLastName());
+        user.setUsername(userRegisterRequest.getFirstName() + " " + userRegisterRequest.getLastName());
         user.setFirstName(userRegisterRequest.getFirstName());
         user.setLastName(userRegisterRequest.getLastName());
         user.setBirthDate(userRegisterRequest.getBirthDate());
@@ -98,7 +100,7 @@ public class AppUserServiceImpl implements AppUserService {
             throw new SearchNotFoundException("Cannot find your email account please register first");
         }
         Otps otp = otpsService.getOtpsByUserId(user.getUserId());
-        if(otp.getVerify()){
+        if (otp.getVerify()) {
             throw new AccountVerificationException("Your account is already verified");
         }
         OtpsRequestDTO otps = otpsService.generateOtp();
@@ -126,8 +128,9 @@ public class AppUserServiceImpl implements AppUserService {
                 "Here is your OTP code to verify",
                 "email-template", context);
     }
+
     @Override
-    public void verifyAndResetPassword(UUID userId,Long otpCode, String newPassword) throws OTPExpiredException {
+    public void verifyAndResetPassword(UUID userId, Long otpCode, String newPassword) throws OTPExpiredException {
         Otps otp = otpsService.getOtpsByOtpCode(otpCode);
         if (otp == null || !otp.getOtpsCode().equals(otpCode) || Timestamp.valueOf(otp.getExpirationDate()).before(new Timestamp(System.currentTimeMillis()))) {
             throw new OTPExpiredException("OTP is invalid or has expired.");
@@ -135,12 +138,14 @@ public class AppUserServiceImpl implements AppUserService {
         String encodedPassword = bCryptPasswordEncoder.encode(newPassword);
         appUserRepository.updatePassword(userId, encodedPassword);
     }
+
     @Override
     public void updatePassword(UUID userId, String password) {
-        appUserRepository.updatePassword(userId,password);
+        appUserRepository.updatePassword(userId, password);
     }
+
     @Override
-    public void resetPassword(UserPasswordRequest userPasswordRequest, String email){
+    public void resetPassword(UserPasswordRequest userPasswordRequest, String email) {
         AppUser user = appUserRepository.findUserByEmail(email);
         if (user == null) {
             throw new UsernameNotFoundException("User not found.");
@@ -148,5 +153,21 @@ public class AppUserServiceImpl implements AppUserService {
         otpsService.confirmVerifyByUserId(user.getUserId());
         String encodedPassword = bCryptPasswordEncoder.encode(userPasswordRequest.getPassword());
         appUserRepository.updatePassword(user.getUserId(), encodedPassword);
+    }
+
+    @Override
+    public void registerNewUserFromThirdParty(LoginWithThirdPartyRequest request) {
+        AppUser user = new AppUser();
+        user.setEmail(request.getEmail());
+        user.setUsername(request.getUsername());
+        user.setPassword(bCryptPasswordEncoder.encode(request.getPassword())); // Encode the password
+        user.setImage(request.getImage());
+        System.out.println(user.toString());
+        appUserRepository.registerNewUserLoginByThirdParty(user);
+    }
+
+    @Override
+    public Boolean selectExistUser(String email) {
+        return appUserRepository.selectExistUser(email);
     }
 }

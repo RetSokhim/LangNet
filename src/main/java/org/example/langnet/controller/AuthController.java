@@ -1,14 +1,14 @@
 package org.example.langnet.controller;
 
-import lombok.AllArgsConstructor;
 import org.example.langnet.exception.AccountVerificationException;
 import org.example.langnet.exception.OTPExpiredException;
 import org.example.langnet.exception.PasswordException;
 import org.example.langnet.model.CustomAppUserDetail;
+import org.example.langnet.model.dto.request.LoginWithThirdPartyRequest;
 import org.example.langnet.model.dto.request.UserLoginRequest;
 import org.example.langnet.model.dto.request.UserPasswordRequest;
 import org.example.langnet.model.dto.request.UserRegisterRequest;
-import org.example.langnet.model.dto.respond.ApiRespond;
+import org.example.langnet.model.dto.respond.ApiResponse;
 import org.example.langnet.model.dto.respond.UserLoginTokenResponse;
 import org.example.langnet.model.entity.AppUser;
 import org.example.langnet.model.entity.Otps;
@@ -75,7 +75,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserRegisterRequest userRegisterRequest) throws Exception {
         appUserService.registerNewUser(userRegisterRequest);
-        return new ResponseEntity<>(new ApiRespond<>("Register successfully", HttpStatus.CREATED, null, 201, LocalDateTime.now()), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ApiResponse<>("Register successfully", HttpStatus.CREATED, null, 201, LocalDateTime.now()), HttpStatus.CREATED);
     }
 
     //For verify account after registered
@@ -118,6 +118,28 @@ public class AuthController {
             }
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/LoginWith3rdParty")
+    public ResponseEntity<?> loginWithThirdParty(@RequestBody LoginWithThirdPartyRequest loginWithThirdPartyRequest) throws Exception {
+        System.out.println(loginWithThirdPartyRequest.toString());
+        boolean isUserExist = appUserService.selectExistUser(loginWithThirdPartyRequest.getEmail());
+        System.out.println(isUserExist);
+        if(isUserExist){
+            authenticate(loginWithThirdPartyRequest.getEmail(), loginWithThirdPartyRequest.getPassword());
+            UserDetails userDetails = appUserService.loadUserByUsername(loginWithThirdPartyRequest.getEmail());
+            final String token = jwtService.generateToken(userDetails);
+            UserLoginTokenResponse authResponse = new UserLoginTokenResponse(token);
+            return ResponseEntity.ok(authResponse);
+        }else {
+            appUserService.registerNewUserFromThirdParty(loginWithThirdPartyRequest);
+            System.out.println("hello");
+            authenticate(loginWithThirdPartyRequest.getEmail(), loginWithThirdPartyRequest.getPassword());
+            UserDetails userDetails = appUserService.loadUserByUsername(loginWithThirdPartyRequest.getEmail());
+            final String token = jwtService.generateToken(userDetails);
+            UserLoginTokenResponse authResponse = new UserLoginTokenResponse(token);
+            return ResponseEntity.ok(authResponse);
         }
     }
 }
