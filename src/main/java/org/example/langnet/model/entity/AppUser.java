@@ -18,7 +18,7 @@ public class AppUser {
     private String email;
     private String firstName;
     private String lastName;
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
     private String password;
     private String image;
     private String gender;

@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.*;
 public interface AttachmentRepository {
 
     @Insert("""
-            INSERT INTO attachment_tb(data) VALUES (CAST(#{json} AS JSONB))
+            INSERT INTO attachment_tb(project_id, language_id, posted_by, attachment_name, data, status, posted_date, expire_date) VALUES (CAST(#{json} AS JSONB))
             """)
     void insertJsonData(String json);
 

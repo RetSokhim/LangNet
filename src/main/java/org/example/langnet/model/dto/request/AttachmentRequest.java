@@ -1,4 +1,4 @@
-package org.example.langnet.model.entity;
+package org.example.langnet.model.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,17 +11,13 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Attachment {
-    private UUID attachmentId;
-    private Project project;
-    private Language language;
-    private AppUser postBy;
-    private List<Feedback> feedback;
+public class AttachmentRequest {
+    private UUID language;
+    private UUID languageTranslateTo;
+    private UUID project;
     private String attachmentName;
     private String data;
-    private List<Hint> hints;
-    private Status status;
+    private List<UUID> hints;
     private LocalDateTime postedDate;
     private LocalDateTime expireDate;
-
 }

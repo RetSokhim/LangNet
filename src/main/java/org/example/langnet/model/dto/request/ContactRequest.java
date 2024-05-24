@@ -5,10 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectCreationRequest {
-    @NotBlank(message = "Project's name cannot be blank")
-    private String projectName;
+public class ContactRequest {
+    private String facebook;
+    private String phoneNumber;
+    private String telegram;
 }

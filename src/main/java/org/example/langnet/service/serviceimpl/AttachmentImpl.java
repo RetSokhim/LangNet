@@ -2,6 +2,7 @@ package org.example.langnet.service.serviceimpl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.poi.ss.usermodel.*;
+import org.example.langnet.model.dto.request.AttachmentRequest;
 import org.example.langnet.model.dto.respond.ExcelFileValue;
 import org.example.langnet.repository.AttachmentRepository;
 import org.example.langnet.service.AttachmentService;
@@ -49,7 +50,8 @@ public class AttachmentImpl implements AttachmentService {
 //    }
 
     @Override
-    public void importFromExcelToJSONB(List<MultipartFile> files) throws IOException {
+    public void importFromExcelToJSONB(List<MultipartFile> files, AttachmentRequest attachmentRequest) throws IOException {
+
         for (MultipartFile file : files) {
             String json = convertExcelToJson(file);
             attachmentRepository.insertJsonData(json);
@@ -65,23 +67,23 @@ public class AttachmentImpl implements AttachmentService {
 //        }
 //    }
 
-    private List<ExcelFileValue> convertExcelToEntities(MultipartFile file) throws IOException {
-        List<ExcelFileValue> entities = new ArrayList<>();
-        try (InputStream inputStream = file.getInputStream()) {
-            Workbook workbook = WorkbookFactory.create(inputStream);
-            Sheet sheet = workbook.getSheetAt(0);
-            for (Row row : sheet) {
-                if (row.getRowNum() > 0) { // Skip header row
-                    ExcelFileValue entity = new ExcelFileValue();
-                    entity.setId(UUID.randomUUID()); // Set a new UUID for each entity
-                    entity.setKey(getCellValue(row.getCell(0)));
-                    entity.setValue(getCellValue(row.getCell(1)));
-                    entities.add(entity);
-                }
-            }
-        }
-        return entities;
-    }
+//    private List<ExcelFileValue> convertExcelToEntities(MultipartFile file) throws IOException {
+//        List<ExcelFileValue> entities = new ArrayList<>();
+//        try (InputStream inputStream = file.getInputStream()) {
+//            Workbook workbook = WorkbookFactory.create(inputStream);
+//            Sheet sheet = workbook.getSheetAt(0);
+//            for (Row row : sheet) {
+//                if (row.getRowNum() > 0) { // Skip header row
+//                    ExcelFileValue entity = new ExcelFileValue();
+//                    entity.setId(UUID.randomUUID()); // Set a new UUID for each entity
+//                    entity.setKey(getCellValue(row.getCell(0)));
+//                    entity.setValue(getCellValue(row.getCell(1)));
+//                    entities.add(entity);
+//                }
+//            }
+//        }
+//        return entities;
+//    }
 
     private String getCellValue(Cell cell) {
         if (cell == null || cell.getCellType() == CellType.BLANK) {

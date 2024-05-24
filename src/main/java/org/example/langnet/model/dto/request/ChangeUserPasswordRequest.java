@@ -9,11 +9,16 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserPasswordRequest {
+public class ChangeUserPasswordRequest {
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$",
             message = "Password must be 8 character long and mix between number and character also match with confirm password")
     @NotBlank(message = "Password cannot be blank")
-    private String password;
+    private String oldPassword;
+
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$",
+            message = "Password must be 8 character long and mix between number and character also match with confirm password")
+    @NotBlank(message = "Password cannot be blank")
+    private String newPassword;
 
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$",
             message = "Password must be 8 character long and mix between number and character also match with confirm password")

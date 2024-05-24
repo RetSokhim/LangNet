@@ -1,6 +1,5 @@
 package org.example.langnet.service.serviceimpl;
 
-import lombok.AllArgsConstructor;
 import org.example.langnet.model.dto.request.OtpsRequestDTO;
 import org.example.langnet.model.entity.Otps;
 import org.example.langnet.repository.OtpsRepository;
@@ -67,11 +66,7 @@ public class OtpsServiceImpl implements OtpsService {
         if (otp == null) {
             throw new Exception("No active OTP found for this user.");
         }
-
-        if (!Objects.equals(otp.getOtpsCode(), otpCode) || Timestamp.valueOf(otp.getExpirationDate()).before(new Timestamp(System.currentTimeMillis()))) {
-            return false;
-        }
-        return true;
+        return Objects.equals(otp.getOtpsCode(), otpCode) && !Timestamp.valueOf(otp.getExpirationDate()).before(new Timestamp(System.currentTimeMillis()));
     }
     @Override
     public void confirmVerifyByUserId(UUID userId) {

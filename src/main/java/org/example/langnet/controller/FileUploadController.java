@@ -19,11 +19,9 @@ import java.util.List;
 @RequestMapping("api/v1/files")
 public class FileUploadController {
     private final FileService fileService;
-    private final AttachmentService attachmentService;
 
-    public FileUploadController(FileService fileService, AttachmentService attachmentService) {
+    public FileUploadController(FileService fileService) {
         this.fileService = fileService;
-        this.attachmentService = attachmentService;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, name = "/upload")
@@ -66,15 +64,6 @@ public class FileUploadController {
 //        }
 //    }
 
-    @PostMapping(path = "/upload multi excel and convert to JSON", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadFileConvertToJSON(@RequestParam("files") List<MultipartFile> files) {
-        try {
-            attachmentService.importFromExcelToJSONB(files);
-            return ResponseEntity.ok("Files processed successfully.");
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().body("Failed to process files: " + e.getMessage());
-        }
-    }
 
 //    @GetMapping("get all jsonb data")
 //    public ResponseEntity<?> getAllJsonbData(){

@@ -1,8 +1,6 @@
 package org.example.langnet.repository;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.example.langnet.model.entity.Role;
 
 import java.util.List;
@@ -28,4 +26,13 @@ public interface RoleRepository {
                WHERE pmt.user_id = #{userId}::UUID AND pmt.project_id = #{projectId}::UUID
             """)
     String getRoleNameByUserIdAndProjectId(UUID userId,UUID projectId);
+
+    @Select("""
+    SELECT * FROM role_tb
+    """)
+    @Results(id = "roleMapping",value = {
+            @Result(property = "roleId",column = "role_id"),
+            @Result(property = "roleName",column = "role_name")
+    })
+    List<Role> getAllRole();
 }

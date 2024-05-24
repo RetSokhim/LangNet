@@ -15,7 +15,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserInProjectResponse {
+public class UserResponse {
     private UUID userId;
     private String username;
     private String email;
@@ -25,5 +25,5 @@ public class UserInProjectResponse {
     private String image;
     private String gender;
     private Contact contact;
-    private String role;
+    private List<ProjectResponse> projects;
 }

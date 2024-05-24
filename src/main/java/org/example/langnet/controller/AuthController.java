@@ -1,13 +1,12 @@
 package org.example.langnet.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.example.langnet.exception.AccountVerificationException;
 import org.example.langnet.exception.OTPExpiredException;
 import org.example.langnet.exception.PasswordException;
 import org.example.langnet.model.CustomAppUserDetail;
-import org.example.langnet.model.dto.request.LoginWithThirdPartyRequest;
-import org.example.langnet.model.dto.request.UserLoginRequest;
-import org.example.langnet.model.dto.request.UserPasswordRequest;
-import org.example.langnet.model.dto.request.UserRegisterRequest;
+import org.example.langnet.model.dto.request.*;
 import org.example.langnet.model.dto.respond.ApiResponse;
 import org.example.langnet.model.dto.respond.UserLoginTokenResponse;
 import org.example.langnet.model.entity.AppUser;
@@ -46,7 +45,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserLoginRequest userLoginRequest) throws Exception {
+    @Operation(summary = "Login with email and password")
+    public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequest userLoginRequest) throws Exception {
         authenticate(userLoginRequest.getEmail(), userLoginRequest.getPassword());
         UserDetails userDetails = appUserService.loadUserByUsername(userLoginRequest.getEmail());
         AppUser user = ((CustomAppUserDetail) userDetails).getUser();
@@ -73,13 +73,15 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserRegisterRequest userRegisterRequest) throws Exception {
+    @Operation(summary = "Register")
+    public ResponseEntity<?> register(@Valid @RequestBody UserRegisterRequest userRegisterRequest) throws Exception {
         appUserService.registerNewUser(userRegisterRequest);
         return new ResponseEntity<>(new ApiResponse<>("Register successfully", HttpStatus.CREATED, null, 201, LocalDateTime.now()), HttpStatus.CREATED);
     }
 
     //For verify account after registered
     @PutMapping("/verify")
+    @Operation(summary = "Verify account before login")
     public ResponseEntity<?> verify(@RequestParam Long otp) throws AccountVerificationException, OTPExpiredException {
         appUserService.verifyAccount(otp);
         return new ResponseEntity<>("Your account is successfully verified", HttpStatus.OK);
@@ -87,6 +89,7 @@ public class AuthController {
 
     //For resend OTP when expired or forget
     @PostMapping("/resend")
+    @Operation(summary = "Resend OTP after expire or invalid")
     public ResponseEntity<?> resendOtpCode(@RequestParam String email) throws Exception {
         appUserService.resendOtpCode(email);
         return new ResponseEntity<>("Your new verification code has already resent", HttpStatus.OK);
@@ -94,6 +97,7 @@ public class AuthController {
 
     //For send OTP when forget password
     @PostMapping("/reset-password/request")
+    @Operation(summary = "Request OTP to reset password")
     public ResponseEntity<?> requestPasswordResetOtp(@RequestParam String email) {
         try {
             appUserService.sendPasswordResetOtp(email);
@@ -105,7 +109,10 @@ public class AuthController {
 
     //For reset password when forget
     @PutMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam Long otp, @RequestBody UserPasswordRequest userPasswordRequest) {
+    @Operation(summary = "Verify OTP to reset password")
+    public ResponseEntity<?> resetPassword(@RequestParam String email,
+                                           @RequestParam Long otp,
+                                           @Valid @RequestBody UserPasswordRequest userPasswordRequest) {
         try {
             UUID userId = appUserService.findUserByEmail(email).getUserId();
             boolean isVerified = otpsService.verifyOtp(otp, userId);
@@ -122,10 +129,10 @@ public class AuthController {
     }
 
     @PostMapping("/LoginWith3rdParty")
-    public ResponseEntity<?> loginWithThirdParty(@RequestBody LoginWithThirdPartyRequest loginWithThirdPartyRequest) throws Exception {
+    @Operation(summary = "Login with third party such as Google and Github")
+    public ResponseEntity<?> loginWithThirdParty(@Valid @RequestBody LoginWithThirdPartyRequest loginWithThirdPartyRequest) throws Exception {
         System.out.println(loginWithThirdPartyRequest.toString());
         boolean isUserExist = appUserService.selectExistUser(loginWithThirdPartyRequest.getEmail());
-        System.out.println(isUserExist);
         if(isUserExist){
             authenticate(loginWithThirdPartyRequest.getEmail(), loginWithThirdPartyRequest.getPassword());
             UserDetails userDetails = appUserService.loadUserByUsername(loginWithThirdPartyRequest.getEmail());
@@ -134,7 +141,6 @@ public class AuthController {
             return ResponseEntity.ok(authResponse);
         }else {
             appUserService.registerNewUserFromThirdParty(loginWithThirdPartyRequest);
-            System.out.println("hello");
             authenticate(loginWithThirdPartyRequest.getEmail(), loginWithThirdPartyRequest.getPassword());
             UserDetails userDetails = appUserService.loadUserByUsername(loginWithThirdPartyRequest.getEmail());
             final String token = jwtService.generateToken(userDetails);
