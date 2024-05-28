@@ -1,9 +1,6 @@
 package org.example.langnet.service.serviceimpl;
 
-import org.example.langnet.exception.AccountVerificationException;
-import org.example.langnet.exception.OTPExpiredException;
-import org.example.langnet.exception.PasswordException;
-import org.example.langnet.exception.SearchNotFoundException;
+import org.example.langnet.exception.*;
 import org.example.langnet.model.CustomAppUserDetail;
 import org.example.langnet.model.dto.request.*;
 import org.example.langnet.model.dto.respond.ProjectResponse;
@@ -26,6 +23,7 @@ import org.thymeleaf.context.Context;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -58,8 +56,11 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public void registerNewUser(UserRegisterRequest userRegisterRequest) throws Exception {
+        boolean isEmailExist = appUserRepository.selectExistUser(userRegisterRequest.getEmail());
+        if(isEmailExist){
+            throw new EmailAlreadyExistException("This email is already exist");
+        }
         OtpsRequestDTO otps = otpsService.generateOtp();
-
         Context context = new Context();
         context.setVariable("message", String.valueOf(otps.getOtpsCode()));
         emailService.sendEmailWithHtmlTemplate(userRegisterRequest.getEmail(),
@@ -69,7 +70,12 @@ public class AppUserServiceImpl implements AppUserService {
         userRegisterRequest.setPassword(password);
 
         AppUser user = new AppUser();
+        Random random = new Random();
         user.setUsername(userRegisterRequest.getFirstName() + " " + userRegisterRequest.getLastName());
+        boolean isUsernameExist = appUserRepository.selectExistUsername(user.getUsername());
+        if(isUsernameExist){
+            user.setUsername(user.getUsername()+random.nextInt(99999));
+        }
         user.setFirstName(userRegisterRequest.getFirstName());
         user.setLastName(userRegisterRequest.getLastName());
         user.setBirthDate(userRegisterRequest.getBirthDate());
@@ -151,8 +157,8 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public void resetPassword(UserPasswordRequest userPasswordRequest, String email) {
-        AppUser user = appUserRepository.findUserByEmail(email);
+    public void resetPassword(UserPasswordRequest userPasswordRequest,UUID userId) {
+        AppUser user = appUserRepository.getUserById(userId);
         if (user == null) {
             throw new UsernameNotFoundException("User not found.");
         }

@@ -88,6 +88,7 @@ CREATE TABLE IF NOT EXISTS attachment_tb
 (
     attachment_id   UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     project_id      UUID REFERENCES project_tb (project_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    base_language   VARCHAR(20)  NOT NULL,
     language_id     UUID REFERENCES language_tb (language_id) ON DELETE CASCADE ON UPDATE CASCADE,
     posted_by       UUID REFERENCES user_tb (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
     attachment_name VARCHAR(100) NOT NULL,

@@ -20,7 +20,7 @@ public interface AppUserService extends UserDetailsService {
     void sendPasswordResetOtp(String email) throws Exception;
     void verifyAndResetPassword(UUID userId,Long otpCode, String newPassword) throws OTPExpiredException;
     void updatePassword(UUID userId,String password);
-    void resetPassword(UserPasswordRequest userPasswordRequest, String email);
+    void resetPassword(UserPasswordRequest userPasswordRequest, UUID userId);
     void registerNewUserFromThirdParty(LoginWithThirdPartyRequest loginWithThirdPartyRequest);
     Boolean selectExistUser(String email);
     void addNewMemberToProject(AddMemberIntoProjectRequest addMemberIntoProjectRequest);

@@ -28,7 +28,9 @@ public interface AppUserRepository {
             ),
             @Result(property = "projects",column = "user_id",
             many = @Many(select = "org.example.langnet.repository.ProjectRepository.getProjectByUserId")
-            )
+            ),
+            @Result(property = "roles", column = "user_id", javaType = List.class,
+                    many = @Many(select = "org.example.langnet.repository.RoleRepository.getRoleNamesByUserId"))
     })
     AppUser findUserByEmail(String username);
 
@@ -83,6 +85,9 @@ public interface AppUserRepository {
     @Select("SELECT EXISTS(SELECT 1 FROM user_tb WHERE email = #{email})")
     Boolean selectExistUser(String email);
 
+    @Select("SELECT EXISTS(SELECT 1 FROM user_tb WHERE username = #{username})")
+    Boolean selectExistUsername(String username);
+
     @Select("""
     SELECT u.user_id, u.username, u.email, r.role_id, r.role_name
     FROM user_tb u
@@ -90,13 +95,7 @@ public interface AppUserRepository {
     JOIN role_tb r ON pm.role_id = r.role_id
     WHERE pm.project_id = #{projectId}
     """)
-    @Results(value = {
-            @Result(property = "userId", column = "user_id"),
-            @Result(property = "username", column = "username"),
-            @Result(property = "email", column = "email"),
-            @Result(property = "roles", column = "user_id", javaType = List.class,
-                    many = @Many(select = "org.example.langnet.repository.RoleRepository.getRoleNamesByUserId"))
-    })
+    @ResultMap("userMapping")
     List<AppUser> getUsersByProjectId(UUID projectId);
 
     @Select("""
@@ -130,4 +129,6 @@ public interface AppUserRepository {
     """)
     @ResultMap("userMapping")
     List<AppUser> searchUserProfileByUserName(String username);
+
+
 }

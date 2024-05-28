@@ -14,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class AttachmentResponse {
     private UUID attachmentId;
+    private String baseLanguage;
     private Language language;
     private UserProfileDetailResponse postBy;
     private List<Feedback> feedback;

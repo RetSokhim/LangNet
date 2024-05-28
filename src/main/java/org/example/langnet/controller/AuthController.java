@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import org.example.langnet.exception.AccountVerificationException;
 import org.example.langnet.exception.OTPExpiredException;
 import org.example.langnet.exception.PasswordException;
+import org.example.langnet.exception.SearchNotFoundException;
 import org.example.langnet.model.CustomAppUserDetail;
 import org.example.langnet.model.dto.request.*;
 import org.example.langnet.model.dto.respond.ApiResponse;
@@ -47,6 +48,9 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "Login with email and password")
     public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequest userLoginRequest) throws Exception {
+        if(appUserService.findUserByEmail(userLoginRequest.getEmail())==null){
+            throw new SearchNotFoundException("User with this email is not found");
+        }
         authenticate(userLoginRequest.getEmail(), userLoginRequest.getPassword());
         UserDetails userDetails = appUserService.loadUserByUsername(userLoginRequest.getEmail());
         AppUser user = ((CustomAppUserDetail) userDetails).getUser();
@@ -110,15 +114,14 @@ public class AuthController {
     //For reset password when forget
     @PutMapping("/reset-password")
     @Operation(summary = "Verify OTP to reset password")
-    public ResponseEntity<?> resetPassword(@RequestParam String email,
-                                           @RequestParam Long otp,
+    public ResponseEntity<?> resetPassword(@RequestParam Long otp,
                                            @Valid @RequestBody UserPasswordRequest userPasswordRequest) {
         try {
-            UUID userId = appUserService.findUserByEmail(email).getUserId();
+            UUID userId = otpsService.getOtpsByOtpCode(otp).getUser().getUserId();
             boolean isVerified = otpsService.verifyOtp(otp, userId);
 
             if (isVerified) {
-                appUserService.resetPassword(userPasswordRequest, email);
+                appUserService.resetPassword(userPasswordRequest,userId);
                 return ResponseEntity.ok("Your password has been successfully reset.");
             } else {
                 return new ResponseEntity<>("Invalid OTP or expired.", HttpStatus.BAD_REQUEST);
